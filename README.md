@@ -3,7 +3,7 @@
 + 2022.7.11 ~ 2022.7.15
 + 첫 팀프로젝트라 많이 부족한점 이해해주시길 바랍니다 😥
 ## 팀프로젝트
- + 총 5명 ( 본인, 태우, 태영, 기열, 성호 )
+ + 총 5명 ( 본인, [태우](https://github.com/workhan0918), 태영, 기열, 성호 )
 ## 사용한 기술 및 환경
 + Window
 + eclipse
@@ -149,104 +149,70 @@
     
 + 회원가입
   1. 입력한 정보들의 공백 여부를 확인합니다.
-  2. DB내 저장된 ID와 입력한 ID의 중복 여부를 확인합니다.
-  3. 이상 없을 시, DB에 정보를 저장함과 동시에 로그인 페이지로 화면을 전환합니다.
+  2. 공백이 있다면 에러메시지를 리스트로 error.jsp에 넘겨 alert을 띄워줍니다.
+  3. 공백이 없다면 새로운 User객체에 정보들을 저장한 뒤 DB에 객체를 저장합니다.
+			
+			UserServlet 일부
 
-			@PostMapping("/controller/add_customer")
-			public String addCustomer(Customer customer, Model model) {
-				if (customer.getName() == "" || customer.getId() == "" || customer.getPasswd() == "" || customer.getSsn() == ""
-						|| customer.getPhone() == "") {
-					model.addAttribute("msg", "빈칸을 입력해 주세요.");
-					return "error/alert";
-				}
-				if( customerService.login(customer.getId()).getId().equals(customer.getId())) {
-					model.addAttribute("msg", "이미 사용중인 ID 입니다.");
-					return "error/alert";
-				}
-				customerService.addCustomer(customer);
-				CustomerService.context.close();
-				return "customer/login";
+			protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+
+			request.setCharacterEncoding("UTF-8");
+
+			String userId = request.getParameter("userId");
+			String pw = request.getParameter("pw");
+			String name = request.getParameter("name");
+			String ssn = request.getParameter("ssn");
+			String phone = request.getParameter("phone");
+			String addr1 = request.getParameter("addr1");
+			String addr2 = request.getParameter("addr2");
+
+			List<String> errorMsgs = new ArrayList<>();
+			if(userId == null || userId.length() == 0) {
+				errorMsgs.add("id를 입력해주세요,");		
+			}else if(pw == null || pw.length() == 0) {
+				errorMsgs.add("비밀번호를 입력해주세요");
+			}else if(name == null || name.length() == 0) {
+				errorMsgs.add("이름을 입력해주세요");
+			}else if(ssn == null || ssn.length() == 0) {
+				errorMsgs.add("주민번호를 입력해주세요");
+			}else if(phone == null || phone.length() == 0) {
+				errorMsgs.add("전화번호를 입력해주세요");
+			}else if(addr1 == null || addr1.length() == 0 || 
+					addr2 == null || addr2.length() == 0) {
+				errorMsgs.add("주소를 입력해주세요");
+			}
+
+			RequestDispatcher dispatcher = null;
+			if(errorMsgs.size() > 0) {
+				dispatcher = request.getRequestDispatcher("error.jsp");
+				request.setAttribute("errorMsgs", errorMsgs);
+				dispatcher.forward(request, response);
+				return;
 			}
 
 
-+ 계좌이체
-  1. 본인 계좌를 입력하는 번거로움을 감안하여 session을 이용해 현재 로그인 한 유저가 보유한 계좌번호들을 select 박스를 이용해 미리 보여주며 선택할 수 있도록 합니다.
-  2. 계좌선택을 안할 경우, 비밀번호 오류, 금액입력 오류, 동일 계좌로의 이체를 할 경우에 유효성 검사를 하였습니다.
-  3. 이상 없을 시 보내는이의 계좌에 출금 기능을, 받는이의 계좌에 입금 기능을 불러왔습니다. (입금, 출금 구현할때 만들어 두었던 메소드)
+			User user = new User();
+			user.setUserId(userId);
+			user.setPw(pw);
+			user.setName(name);
+			user.setSsn(ssn);
+			user.setPhone(phone);
+			user.setAddr(addr1+ " " + addr2);
+			Userservice userService = new Userservice();
+			userService.addUser(user);
+			pointService.createAccountNum(userId);
+			request.setAttribute("user", user);
+			response.sendRedirect("../loginout/login");
+			return;
+			}	
+
+
++ 게시판 수정
+  1. 게시판에 올라와있는 글 중, 본인 글만 수정가능해야하는데 모든 글을 수정할수있는 어려움을 겪었습니다.
+  2. 
 			
-			transfer.jsp 일부
 			
-			<form action="transfer" method="post">
-			<h1 class="h3 mb-3 fw-normal" style="text-align:center;">계좌이체</h1>
-
-			<div class="form-floating">
-				<select name="sendAccountNum" class="form-control" style="padding-top : 0.8rem;">
-				    <option value="">보내는 이 계좌번호</option>
-				    <c:forEach var="account" items="${accountNum}">
-				    		<option value="${account.accountNum}">${account.accountNum}</option>
-				    </c:forEach>
-				</select>
-			</div>
-			<div class="form-floating">
-				<input type="password" name="passwd" class="form-control"
-					id="floatingPassword" placeholder="Password">
-				<label for="floatingPassword">비밀번호 </label>
-			</div>
-			<div class="form-floating">
-				<input type="text" name="getAccountNum"
-					placeHolder="000-00-0000" class="form-control"
-					id="floatingPassword" placeholder="Password">
-				<label for="floatingPassword">받는 이 계좌번호 </label>
-			</div>
-			<div class="form-floating margin">
-				<input type="number" name="money" class="form-control"
-					id="floatingPassword" placeholder="Password">
-				<label for="floatingPassword">이체 금액 </label>
-			</div>
-			<button class="w-100 btn btn-lg btn-primary" type="submit">이체</button>
-			</form>
-
-
-
-			TransferController 일부
-
-			@PostMapping("/controller/transfer")
-			public String transfer(String sendAccountNum, String getAccountNum, String passwd, String money, Model model) {
-				if (sendAccountNum == "" || getAccountNum == "" || passwd == "" || money.isEmpty() == true) {
-					model.addAttribute("msg", "빈칸을 입력해 주세요.");
-					return "error/alert";
-				}
-				if (customerService.checkAccountPasswd(sendAccountNum).getPasswd().equals(passwd)) {
-					Double dMoney = Double.valueOf(money);
-					if (dMoney > 0) {
-						if (accountService.checkingBalance(sendAccountNum).getBalance() >= dMoney) {
-							if (accountService.checkAccountByAccountNum(getAccountNum) != null) {
-								if (!sendAccountNum.equals(getAccountNum)) {
-									accountService.withdraw(sendAccountNum, dMoney);
-									accountService.deposit(getAccountNum, dMoney);
-									return "redirect:/controller/main_page";
-								} else {
-									model.addAttribute("msg", "본인 계좌로의 이체는 불가능 합니다.");
-									return "error/alert";
-								}
-							} else {
-								model.addAttribute("msg", "받으시는 분의 계좌가 존재하지 않습니다.");
-								return "error/alert";
-							}
-						} else {
-							model.addAttribute("msg", "잔고부족");
-							return "error/alert";
-						}
-					} else {
-						model.addAttribute("msg", "올바른 금액을 입력해 주세요.");
-						return "error/alert";
-					}
-				} else {
-					model.addAttribute("msg", "올바른 비밀번호를 입력해주세요.");
-					return "error/alert";
-				}
-			}
-	    
 
  ## 구현 화면
  ### 로그인
