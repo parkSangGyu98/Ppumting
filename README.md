@@ -273,7 +273,7 @@
  ### 사용자, 트레이너 회원가입
  
  ![image](https://user-images.githubusercontent.com/103983349/185534159-e81b5b53-f5f6-48bd-98bc-e588f7efb38d.png)
- ![image](https://user-images.githubusercontent.com/103983349/185534750-4850a463-da52-4e43-ab15-23f38cbb0691.png)
+ ![image](https://user-images.githubusercontent.com/103983349/185536890-5a201228-3bdc-4ee6-86db-4ffbdbec62e6.png)
  
  ### 메인
  
