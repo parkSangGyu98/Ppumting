@@ -209,9 +209,58 @@
 
 
 + 게시판 수정
-  1. 게시판에 올라와있는 글 중, 본인 글만 수정가능해야하는데 모든 글을 수정할수있는 어려움을 겪었습니다.
-  2. 
+  1. 게시판에 올라와있는 글 중, 본인 글만 수정할 수 있어야 하는데 모든 글을 수정할 수 있는 어려움을 겪었습니다.
+  2. 세션으로 현재 로그인 되어있는 아이디와 게시글 글쓴이 아이디를 비교하여 해결할 수 있었습니다.
+  
+  			SelectQnaSevlet 일부
+  	
+  			protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		
+			Qna qnas = new Qna();
+			qnas = service.viewQna(request.getParameter("qnaNo"));
+			HttpSession session = request.getSession(false);
+			String userId = (String) session.getAttribute("userId");
+
+			if(qnas.getUserId().equals(userId)) { //게시글 주인이라면
+				request.setAttribute("qnas", qnas);	// "qnas"(jsp에서 뿌려주는 이름)는 키, qnas는 값
+				request.setAttribute("check", true);
+				request.getRequestDispatcher("selectNoQna.jsp").forward(request, response);
+			}else {
+				request.setAttribute("qnas", qnas);
+				request.setAttribute("check", false);
+				request.getRequestDispatcher("selectNoQna.jsp").forward(request, response);
+			}
+			}
 			
+			
+			selectNoQna.jsp 일부
+			
+			<c:if test="${check == false}">
+			<div
+			style="width: 100%; height: 50px; display: flex; text-align: center; font-size: 30px; line-height: 38px;">
+			<a class="addBu" onclick="back()" style="text-decoration: none;">뒤로가기</a>
+			</div>
+			</c:if>
+			<c:if test="${check == true}">
+			<form action="modifyQna.do" method="post">
+				<!--  <button type="submit" value="${qnas.qnaNo}" name="qnaNo">수정</button> -->
+				<button type="submit" value="${qnas.qnaNo}" name="qnaNo"
+					onclick="location.href='modifyQna.jsp'" class="addBu">
+					<span style="font-size: 30px; line-height: 38px;" class="ft">수정</span>
+				</button>
+			</form>
+			<form action="deleteQna.do" method="post">
+				<button type="submit" value="${qnas.qnaNo}" name="qnaNo"
+					class="addBu">
+					<span style="font-size: 30px; line-height: 38px;" class="ft">삭제</span>
+				</button>
+			</form>
+			<div
+				style="width: 100%; height: 50px; display: flex; text-align: center; font-size: 30px; line-height: 38px;">
+				<a class="addBu" onclick="back()" style="text-decoration: none;">뒤로가기</a>
+			</div>
+			</c:if>
 			
 
  ## 구현 화면
