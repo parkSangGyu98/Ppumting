@@ -25,12 +25,12 @@
   + 회원가입, 로그인, 로그아웃, 조회
   
 ## 담당 기능
-+ 사용자
++ 사용자 부분
   + 회원가입, 탈퇴, 로그인, 로그아웃, 개인정보 수정
   + 포인트 계좌 생성, 포인트 조회, 충전, 차감
   
 ## 주요 코드
-### 사용자
+### 사용자 부분
  + 개인정보 수정
    1. 수정 클릭 시 현재 로그인되어있는 아이디를 이용하여 고객 정보를 가져와 미리 화면에 띄워둡니다.
    2. 완료 클릭 시 빈칸이 없는지 유효성검사 후 정보들을 새로운 객체로 받아옵니다.
@@ -121,28 +121,32 @@
 		return result;
 		}
 	
-+ 쪽지 
-  1. 
++ 쪽지 삭제
+  1. 받은 보관함에서 쪽지를 삭제하면 상대방의 보낸 쪽지함에서도 삭제가 되는 상황이 발생하여
+     받는사람, 보낸사람의 DB를 각각 만들어서 해결하였습니다.
 	
-		    LoginController 일부
+		Note.sql 일부
+	
+		CREATE TABLE RcvNotes (
+		no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
+		sentid 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
+		userId		VARCHAR(20)		NOT NULL	DEFAULT	'',
+		title		VARCHAR(100)	NOT NULL 	DEFAULT '',
+		msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
+		sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
+		sendnote	BOOLEAN			NOT NULL	DEFAULT FALSE
+		);
 
-		    @PostMapping("/controller/login")
-			public String addAccount(Customer customer, HttpSession session,  HttpServletRequest request, Model model) {
-			session = request.getSession();
-			if (customerService.login(customer.getId()).getId().equals(customer.getId())
-			 && customerService.login(customer.getId()).getPasswd().equals(customer.getPasswd())) {
-				customerService.context.close();
-				session.setAttribute("customerId", customer.getId());
-				return "redirect:/controller/main_page";
-			}
-			model.addAttribute("msg", "올바른 아이디 또는 비밀번호를 입력해주세요.");
-			return "error/alert";
-			}
+		CREATE TABLE SendNotes (
+		no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
+		userId 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
+		recvid		VARCHAR(20)		NOT NULL	DEFAULT	'',
+		title		VARCHAR(100)	NOT NULL 	DEFAULT '',
+		msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
+		sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
+		sendnote	BOOLEAN			NOT NULL	DEFAULT TRUE
+		);
     
-    3. 실패 시 화면
-    
-    ![image](https://user-images.githubusercontent.com/103983349/184834152-bd2073e6-9961-41de-9da7-7a7466661dcb.png)
-
 + 회원가입
   1. 입력한 정보들의 공백 여부를 확인합니다.
   2. DB내 저장된 ID와 입력한 ID의 중복 여부를 확인합니다.
