@@ -264,17 +264,56 @@
 			
 
  ## 구현 화면
- ### 로그인
+ ### 사용자, 트레이너 로그인
 
  ![image](https://user-images.githubusercontent.com/103983349/185534090-186fb9dd-14db-476a-99d6-767c419657e0.png)
+ ![image](https://user-images.githubusercontent.com/103983349/185536667-5fd94a8f-6a27-4d2d-b691-b8d2d3af2e88.png)
 
- ### 회원가입
+
+ ### 사용자, 트레이너 회원가입
  
  ![image](https://user-images.githubusercontent.com/103983349/185534159-e81b5b53-f5f6-48bd-98bc-e588f7efb38d.png)
-
+ ![image](https://user-images.githubusercontent.com/103983349/185534750-4850a463-da52-4e43-ab15-23f38cbb0691.png)
+ 
  ### 메인
  
- ![image](https://user-images.githubusercontent.com/103983349/185534223-eee91437-8b14-4521-8584-48a719ff7bd0.png)
+ ![image](https://user-images.githubusercontent.com/103983349/185534293-83c2eee3-b87b-4329-8315-f73677eda0a8.png)
+ 
+ ### 회원정보 수정
+ 
+ ![image](https://user-images.githubusercontent.com/103983349/185534413-484fbfb8-d355-414c-8fb9-67dcdc1c69fa.png)
+
+ 
+ ### 게시판
+ 
+ 대기
+ 
+ ### 게시글 등록
+ 
+ 대기
+ 
+ ### 게시글 보기
+ 
+ 대기
+ 
+ ### 게시글 수정
+ 
+ 대기
+ 
+ ### P.P.T
+ 
+ ![image](https://user-images.githubusercontent.com/103983349/185534473-054e054f-96d7-4c42-aaf3-a88c93694e56.png)
+ 
+ ### 충전
+ 
+ ![image](https://user-images.githubusercontent.com/103983349/185534437-c0321692-2853-4600-8bd7-35ebeef06e5b.png)
+
+ ### "선생님 자세히 알아보기" 버튼 클릭 시
+ 
+ 대기 ( 선생님에 맞는 정보 불러오는 화면 )
+ 
+ 
+
  
  
 
