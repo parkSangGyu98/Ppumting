@@ -36,116 +36,116 @@
    2. 완료 클릭 시 빈칸이 없는지 유효성검사 후 정보들을 새로운 객체로 받아옵니다.
    3. 새로운 객체를 업데이트 시킵니다.
  
-        	UserUpdateServlet 일부
+			UserUpdateServlet 일부
 
-         	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-		throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
-		
-		String userId = request.getParameter("userId");
-		
-		HttpSession session = request.getSession(false);
-		session.setAttribute("userId", userId);
-		response.sendRedirect("../home");
-		
-		
-		String pw = request.getParameter("pw");
-		String phone = request.getParameter("phone");
-		String name = request.getParameter("name");
-		String addr = request.getParameter("addr");
+			protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+			request.setCharacterEncoding("UTF-8");
 
-		List<String> errorMsgs = new ArrayList<>();
-		
-		if(pw == null || pw.length() == 0) {
-			errorMsgs.add("비밀번호를 입력해주세요");
-		}else if(name == null || name.length() == 0) {
-			errorMsgs.add("이름을 입력해주세요");
-		}else if(phone == null || phone.length() == 0) {
-			errorMsgs.add("전화번호를 입력해주세요");
-		}else if(addr == null || addr.length() == 0) {
-			errorMsgs.add("주소를 입력해주세요");
-		}
-		
-		User user = new User();
-		user.setUserId(userId);
-		user.setPw(pw);
-		user.setName(name);
-		user.setPhone(phone);
-		user.setAddr(addr);
-		
-		userService.updateUser(user);
-		request.setAttribute("user", user);
-		}
+			String userId = request.getParameter("userId");
+
+			HttpSession session = request.getSession(false);
+			session.setAttribute("userId", userId);
+			response.sendRedirect("../home");
+
+
+			String pw = request.getParameter("pw");
+			String phone = request.getParameter("phone");
+			String name = request.getParameter("name");
+			String addr = request.getParameter("addr");
+
+			List<String> errorMsgs = new ArrayList<>();
+
+			if(pw == null || pw.length() == 0) {
+				errorMsgs.add("비밀번호를 입력해주세요");
+			}else if(name == null || name.length() == 0) {
+				errorMsgs.add("이름을 입력해주세요");
+			}else if(phone == null || phone.length() == 0) {
+				errorMsgs.add("전화번호를 입력해주세요");
+			}else if(addr == null || addr.length() == 0) {
+				errorMsgs.add("주소를 입력해주세요");
+			}
+
+			User user = new User();
+			user.setUserId(userId);
+			user.setPw(pw);
+			user.setName(name);
+			user.setPhone(phone);
+			user.setAddr(addr);
+
+			userService.updateUser(user);
+			request.setAttribute("user", user);
+			}
 
 + 포인트 계좌 생성
   1. 회원가입시 자동으로 랜덤한 숫자의 포인트가 0인 계좌를 생성해 줍니다.
   2. 본인 계좌번호는 충전할 경우 확인할 수 있습니다.
   
-        	PointDao 일부
+			PointDao 일부
 
-          	public String createAccountNum(String userId) { 
-		String sql = "INSERT INTO Point (point, accountNum, userId) VALUES (0, ?, ?)";
+			public String createAccountNum(String userId) { 
+			String sql = "INSERT INTO Point (point, accountNum, userId) VALUES (0, ?, ?)";
 
-		String numStr = String.valueOf((int) (Math.random() * 1000000000));
-		StringBuilder sb = new StringBuilder();
-		sb.append(numStr.substring(0, 3));
-		sb.append("-");
-		sb.append(numStr.substring(3, 5));
-		sb.append("-");
-		sb.append(numStr.substring(5));
+			String numStr = String.valueOf((int) (Math.random() * 1000000000));
+			StringBuilder sb = new StringBuilder();
+			sb.append(numStr.substring(0, 3));
+			sb.append("-");
+			sb.append(numStr.substring(3, 5));
+			sb.append("-");
+			sb.append(numStr.substring(5));
 
-		String result = sb.toString();
+			String result = sb.toString();
 
-		try {
-			Connection con = datasource.getConnection();
-			PreparedStatement stmt = con.prepareStatement(sql);
 			try {
-				if (pointdao.isValidUser(userId)) { 
-					if( pointdao.checkAccountNum(userId) == null ) { //생성해주기
-						stmt.setString(1, result);
-						stmt.setString(2, userId);
-						stmt.executeUpdate();
-					}else { 
+				Connection con = datasource.getConnection();
+				PreparedStatement stmt = con.prepareStatement(sql);
+				try {
+					if (pointdao.isValidUser(userId)) { 
+						if( pointdao.checkAccountNum(userId) == null ) { //생성해주기
+							stmt.setString(1, result);
+							stmt.setString(2, userId);
+							stmt.executeUpdate();
+						}else { 
+							result = null;
+						}
+					} else {
 						result = null;
 					}
-				} else {
-					result = null;
+				} finally {
+					stmt.close();
+					con.close();
 				}
-			} finally {
-				stmt.close();
-				con.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-		}
+			return result;
+			}
 	
 + 쪽지 삭제
   1. 받은 보관함에서 쪽지를 삭제하면 상대방의 보낸 쪽지함에서도 삭제가 되는 상황이 발생하여
      받는사람, 보낸사람의 DB를 각각 만들어서 해결하였습니다.
 	
-		Note.sql 일부
-	
-		CREATE TABLE RcvNotes (
-		no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
-		sentid 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
-		userId		VARCHAR(20)		NOT NULL	DEFAULT	'',
-		title		VARCHAR(100)	NOT NULL 	DEFAULT '',
-		msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
-		sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
-		sendnote	BOOLEAN			NOT NULL	DEFAULT FALSE
-		);
+			Note.sql 일부
 
-		CREATE TABLE SendNotes (
-		no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
-		userId 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
-		recvid		VARCHAR(20)		NOT NULL	DEFAULT	'',
-		title		VARCHAR(100)	NOT NULL 	DEFAULT '',
-		msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
-		sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
-		sendnote	BOOLEAN			NOT NULL	DEFAULT TRUE
-		);
+			CREATE TABLE RcvNotes (
+			no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
+			sentid 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
+			userId		VARCHAR(20)		NOT NULL	DEFAULT	'',
+			title		VARCHAR(100)	NOT NULL 	DEFAULT '',
+			msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
+			sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
+			sendnote	BOOLEAN			NOT NULL	DEFAULT FALSE
+			);
+
+			CREATE TABLE SendNotes (
+			no			BIGINT		 	PRIMARY KEY	AUTO_INCREMENT,
+			userId 		VARCHAR(20) 	NOT NULL	DEFAULT	'',
+			recvid		VARCHAR(20)		NOT NULL	DEFAULT	'',
+			title		VARCHAR(100)	NOT NULL 	DEFAULT '',
+			msg			VARCHAR(200)	NOT NULL 	DEFAULT '',
+			sentDate 	TIMESTAMP		NOT NULL 	DEFAULT CURRENT_TIMESTAMP,
+			sendnote	BOOLEAN			NOT NULL	DEFAULT TRUE
+			);
     
 + 회원가입
   1. 입력한 정보들의 공백 여부를 확인합니다.
