@@ -16,90 +16,109 @@
 
 ## 구현 기능
 + 사용자
-  + 랜덤한 계좌번호인 적금 또는 대출 계좌 생성
-  + 계좌 내역 조회 및 계좌 상세내역 조회
-+ 
-  + 회원가입, 로그인, 로그아웃
-  + 계좌이체
-  + 입금, 출금
+  + 회원가입, 탈퇴, 로그인, 로그아웃, 개인정보 수정
+  + 게시판 등록, 수정, 삭제, 조회
+  + 포인트 계좌 생성, 포인트 조회, 충전, 차감
+  + 쪽지 발송, 답장, 조회, 삭제
++ 트레이너
+  + 회원가입, 로그인, 로그아웃, 조회
   
- ## 주요 코드
- ### 계좌
- + 랜덤 계좌번호 생성
-   1. 랜덤함수를 이용하여 "123-45-6789" 형태의 숫자를 가져옵니다.
-   2. 계좌를 생성할 때 SavingAccount 선택 시 "S"를, CheckingAccount 선택 시 "C"를 받아와 알맞는 계좌를 생성해주며 DB에 저장다.
+## 담당 기능
++ 사용자
+  + 회원가입, 탈퇴, 로그인, 로그아웃, 개인정보 수정
+  + 포인트 계좌 생성, 포인트 조회, 충전, 차감
+  
+## 주요 코드
+### 사용자
+ + 개인정보 수정
+   1. 수정 클릭 시 현재 로그인되어있는 아이디를 이용하여 고객 정보를 가져와 미리 화면에 띄워둡니다.
+   2. 완료 클릭 시 빈칸이 없는지 유효성검사 후 정보들을 새로운 객체로 받아옵니다.
+   3. 새로운 객체를 업데이트 시킵니다.
  
-           AddAccountController 일부
+        	UserUpdateServlet 일부
 
-           @PostMapping("/controller/add_account")
-           public String addAccount(Account account, HttpSession session, Model model) {
+         	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		
+		String userId = request.getParameter("userId");
+		
+		HttpSession session = request.getSession(false);
+		session.setAttribute("userId", userId);
+		response.sendRedirect("../home");
+		
+		
+		String pw = request.getParameter("pw");
+		String phone = request.getParameter("phone");
+		String name = request.getParameter("name");
+		String addr = request.getParameter("addr");
 
-            String numStr = String.valueOf((int) (Math.random() * 1000000000));
-            StringBuilder sb = new StringBuilder();
-            sb.append(numStr.substring(0, 3));
-            sb.append("-");
-            sb.append(numStr.substring(3, 5));
-            sb.append("-");
-            sb.append(numStr.substring(5));
+		List<String> errorMsgs = new ArrayList<>();
+		
+		if(pw == null || pw.length() == 0) {
+			errorMsgs.add("비밀번호를 입력해주세요");
+		}else if(name == null || name.length() == 0) {
+			errorMsgs.add("이름을 입력해주세요");
+		}else if(phone == null || phone.length() == 0) {
+			errorMsgs.add("전화번호를 입력해주세요");
+		}else if(addr == null || addr.length() == 0) {
+			errorMsgs.add("주소를 입력해주세요");
+		}
+		
+		User user = new User();
+		user.setUserId(userId);
+		user.setPw(pw);
+		user.setName(name);
+		user.setPhone(phone);
+		user.setAddr(addr);
+		
+		userService.updateUser(user);
+		request.setAttribute("user", user);
+		}
 
-            if( account.getAccType() != null) {
-             Account newAccount = null;
-             if (account.getAccType().equals("S")) {
-              newAccount = new SavingsAccount();
-             } else {
-              newAccount = new CheckingAccount();
-             }
-             newAccount.setAccountNum(sb.toString());
-             newAccount.setCustomerId((String)session.getAttribute("customerId"));
-             newAccount.setAccType(account.getAccType());
++ 포인트 계좌 생성
+  1. 회원가입시 자동으로 랜덤한 숫자의 포인트가 0인 계좌를 생성해 줍니다.
+  2. 본인 계좌번호는 충전할 경우 확인할 수 있습니다.
+  
+        	PointDao 일부
 
-             accountService.addAccount(newAccount);
-             AccountService.context.close();
+          	public String createAccountNum(String userId) { 
+		String sql = "INSERT INTO Point (point, accountNum, userId) VALUES (0, ?, ?)";
 
-             return "redirect:/controller/main_page";
-            }else {
-             model.addAttribute("msg", "생성할 계좌를 선택해 주세요.");
-             return "error/alert";
-            }
+		String numStr = String.valueOf((int) (Math.random() * 1000000000));
+		StringBuilder sb = new StringBuilder();
+		sb.append(numStr.substring(0, 3));
+		sb.append("-");
+		sb.append(numStr.substring(3, 5));
+		sb.append("-");
+		sb.append(numStr.substring(5));
 
-           }
+		String result = sb.toString();
 
-+ 계좌 상세내역 조회
-  1. 버튼을 클릭하기전의 jsp 에서 컨텐츠 부분만 바꿔서 작업하였습니다.
-  2. 로그인 시 등록한 session값(로그인한 ID) 를 이용하여 DB에서 보유중인 계좌정보를 가져옵니다.
-  3. 가져온 계좌정보들을 for문을 이용하여 상세정보를 조회시킵니다.
-  4. 돌아가기 버튼 클릭시 main_page 컨트롤러로 이동합니다.
-
-           get_Detail.jsp 일부
-
-           <form action="main_page" method="get" style="text-align: center; margin-bottom: 50px;">
-			       <button class="card-text mb-auto getBalanceButton"
-              type="submit">돌아가기</button>
-            </form>
-            <div class="row mb-2">
-
-             <c:forEach var="account" items="${accountNum}">
-              <div class="col-md-6">
-               <div
-                class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                 <c:if test="${account.accType eq 'S'}">
-                  <h3 class="mb-0">Saving Account</h3>
-                 </c:if>
-                 <c:if test="${account.accType eq 'C'}">
-                  <h3 class="mb-0">Checking Account</h3>
-                 </c:if>
-                 <p class="card-text mb-auto">${account.accountNum}</p>
-                 <div class="mb-1">잔고 : ${account.balance}원</div>
-                 <div class="mb-1">이자율 : ${account.interestRate}%</div>
-                 <div class="mb-1">대출한도 : ${account.overAmount}원</div>
-
-                </div>
-               </div>
-              </div>
-             </c:forEach>
-
-            </div>
+		try {
+			Connection con = datasource.getConnection();
+			PreparedStatement stmt = con.prepareStatement(sql);
+			try {
+				if (pointdao.isValidUser(userId)) { 
+					if( pointdao.checkAccountNum(userId) == null ) { //생성해주기
+						stmt.setString(1, result);
+						stmt.setString(2, userId);
+						stmt.executeUpdate();
+					}else { 
+						result = null;
+					}
+				} else {
+					result = null;
+				}
+			} finally {
+				stmt.close();
+				con.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+		}
 	
 ### 사용자
 + 로그인
