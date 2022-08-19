@@ -302,7 +302,7 @@
  
  ### P.P.T
  
- ![image](https://user-images.githubusercontent.com/103983349/185534473-054e054f-96d7-4c42-aaf3-a88c93694e56.png)
+ ![image](https://user-images.githubusercontent.com/103983349/185537275-85d5be18-0fe8-4f87-af95-578e83c5e30a.png)
  
  ### 충전
  
