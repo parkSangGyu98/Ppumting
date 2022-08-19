@@ -3,7 +3,7 @@
 + 2022.7.11 ~ 2022.7.15
 + 첫 팀프로젝트라 많이 부족한점 이해해주시길 바랍니다 😥
 ## 팀프로젝트
- + 총 5명 ( 본인, [태우](https://github.com/workhan0918), 태영, 기열, 성호 )
+ + 총 5명 ( [본인](https://github.com/parkSangGyu98), [태우](https://github.com/workhan0918), 태영, [기열](https://github.com/BaekKiYeol), [성호](https://github.com/LeeSeongHo7984) )
 ## 사용한 기술 및 환경
 + Window
 + eclipse
