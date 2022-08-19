@@ -39,7 +39,7 @@
         	UserUpdateServlet 일부
 
          	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
+		throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		
 		String userId = request.getParameter("userId");
