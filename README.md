@@ -286,19 +286,19 @@
  
  ### 게시판
  
- url 위치
+ ![image](https://user-images.githubusercontent.com/103983349/185874733-2b10934f-d014-4070-b492-d40070b78ec6.png)
  
  ### 게시글 등록
  
- url 위치
+ ![image](https://user-images.githubusercontent.com/103983349/185874804-1c530035-1447-4870-acaf-c11654eaf3b6.png)
  
  ### 게시글 보기
  
- url 위치
+ ![image](https://user-images.githubusercontent.com/103983349/185874881-3cb1a517-a515-4eb4-a204-a5b3be22baee.png)
  
  ### 게시글 수정
  
- url 위치
+ ![image](https://user-images.githubusercontent.com/103983349/185874920-0d98e605-e7fa-409b-a39b-4ab157a7c575.png)
  
  ### P.P.T
  
