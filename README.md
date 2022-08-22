@@ -1,4 +1,4 @@
-# Ppumting (Ppumping Dating)
+# Ppumting (Ppumping Dating) 🏋️‍♀️
 + 함께 운동하기를 원하는 사람들을 위한 만남 및 PT 서비스 제공 사이트
 + 2022.7.11 ~ 2022.7.15
 + 첫 팀프로젝트라 많이 부족한 점 이해해주시길 바랍니다 😥
