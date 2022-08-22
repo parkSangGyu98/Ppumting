@@ -308,9 +308,4 @@
  
  ![image](https://user-images.githubusercontent.com/103983349/185534437-c0321692-2853-4600-8bd7-35ebeef06e5b.png)
 
- ### 트레이너 조회
- 
- url 위치 ( 특정 트레이너 정보 조회 화면 )
- 
- 
 
