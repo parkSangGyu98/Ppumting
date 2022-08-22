@@ -51,43 +51,46 @@
 		</jsp:include>
 	</div>
 	<%-- content Area --%>
-	<div class="trainer-wrapper">
-		<div class="inner">
-			<div class="trainer-container">
-				<h1 style="margin-top: 50px; text-align: center;">
-					<span class="trainer-hover" style="font-weight: bold;">BOARD</span>
-				</h1>
-			</div>
-		</div>
-	</div>
 
+  <div class="trainer-wrapper">
+        <div class="inner">
+          <div class="trainer-container">
+            <h1 style="margin-top: 50px; text-align: center; font-size: 80px;"><span class="trainer-hover"
+            style=" font-weight: bold; color: #0d6efd;">BOARD</span></h1>
+          </div>
+        </div>
+      </div>
+      <div style="margin-left: 1210px;color: violet;font-weight: bold;">※ 상세보기를 원하시면 원하시는 번호를 클릭하세요</div>
+    <div class="form" style="height: 550px;">
+    <form action="find.do" method="post" style="text-align: center;"><br>
+    <table>
+    	<th>번호</th>
+		<th>제목</th>
+		<th>아이디</th>
+		<th>게시일자</th>
+		<c:forEach var="qna" items="${qnaList}" varStatus="x">	<!-- varStatus는 인덱스값 사용가능한 문법 -->
+		<tr>
+			<td style="font-weight: 400;color: black;"><a href="selectNoQna.do?qnaNo=${qna.qnaNo}" style="color: black;text-decoration: none;">${x.index+1}</td>
+			<td style="font-weight: 400;color: black;">${qna.qnaTitle}</td>
+			<td style="font-weight: 400;color: black;">${qna.userId}</td>
+			<td style="font-weight: 400;color: black;">${qna.qnaRegDate}</td>
+		</tr>
+	
+		</c:forEach>
+	</table>
+	</form>
 	</div>
-	<div class="form">
-		<form action="find.do" method="post" style="text-align: center;">
-			<br>
-			<c:forEach var="qna" items="${qnaList}">
-				<div>
-					<a href="selectNoQna.do?qnaNo=${qna.qnaNo}"
-						style="text-decoration: none; text-align: center; display: flex; justify-content: center; margin-bottom: 10px;"><br>
-						<!-- ${qna.qnaNo}.&nbsp; -->
-						<div style="font-size: xx-large;">
-							제목 : <input type="text" value="${qna.qnaTitle}"
-								style="border: none; margin-left: 30px;">
-						</div> </a>
-				</div>
-			</c:forEach>
-		</form>
-		<br> <br>
-	</div>
+	
+	<!-- 등록버튼 -->
 	<div style="height: 45px;">
-		<button class="addBu">
-			<a href='<c:url value="/Qna/qnaInfo/addQna.jsp"/>'>등록</a>
+		<button class="addBu" style="margin-top: -50px;">
+			<a href='<c:url value="/Qna/qnaInfo/addQna.jsp"/>' style="font-weight: bold;">등록</a>
 		</button>
 	</div>
 
 
 	<%-- footer Area --%>
-	<div id="footer">
+	<div id="footer" style="margin-top: 28px;">
 		<%@ include file="/incl/footer.jsp"%>
 	</div>
 
